@@ -23,6 +23,7 @@ namespace WhyNsStreamWatcher
         private FlowLayoutPanel flpStreams = new FlowLayoutPanel();
 
         private Label lblNextRefresh = new Label();
+        private Label lblStreamsOffline = new Label();
 
         // Stream Clients API
 
@@ -74,39 +75,54 @@ namespace WhyNsStreamWatcher
 
             // Button : GetFollowingChannels
 
-            this.btnGetFollowingChannels.Location = new System.Drawing.Point(20, 18);
-            this.btnGetFollowingChannels.Name = "btnGetFollowingChannels";
-            this.btnGetFollowingChannels.AutoSize = true;
-            this.btnGetFollowingChannels.Text = "Show Notification Pop-up (Test)";
-            this.btnGetFollowingChannels.UseVisualStyleBackColor = true;
-            this.btnGetFollowingChannels.Click += new System.EventHandler(this.btnGetFollowingChannels_Click);
+            //this.btnGetFollowingChannels.Location = new System.Drawing.Point(20, 18);
+            //this.btnGetFollowingChannels.Name = "btnGetFollowingChannels";
+            //this.btnGetFollowingChannels.AutoSize = true;
+            //this.btnGetFollowingChannels.Text = "Show Notification Pop-up (Test)";
+            //this.btnGetFollowingChannels.UseVisualStyleBackColor = true;
+            //this.btnGetFollowingChannels.Click += new System.EventHandler(this.btnGetFollowingChannels_Click);
 
             
 
 
-            // Label : NextRefresh
-
-            lblNextRefresh.AutoSize = true;
-            lblNextRefresh.Text = "Refreshing";
-            lblNextRefresh.Location = new System.Drawing.Point(200, 23);
 
             // FlowLayoutPanel : Streams
             
             flpStreams.Visible = true;
-            flpStreams.Name = "flpContent";
+            flpStreams.Name = "flpStreams";
             flpStreams.FlowDirection = System.Windows.Forms.FlowDirection.TopDown;
-            flpStreams.Location = new System.Drawing.Point(10, 55);
-            flpStreams.Size = new System.Drawing.Size(426, 530);
+            flpStreams.Location = new System.Drawing.Point(10, 10);
+            flpStreams.Size = new System.Drawing.Size(426, 540);
             flpStreams.AutoScroll = true;
             flpStreams.WrapContents = false;
             flpStreams.MouseEnter += new EventHandler(flpStreams_MouseEnter);
             //flpStreams.BackColor = Color.FromArgb(48, 48, 48);
             flpStreams.BackColor = Color.Transparent;
 
+
+
+            // Label : NextRefresh
+
+            lblNextRefresh.AutoSize = true;
+            lblNextRefresh.Name = "lblNextRefresh";
+            lblNextRefresh.Text = "Refreshing";
+            lblNextRefresh.Location = new System.Drawing.Point(15, 565);
+            lblNextRefresh.Font = new Font("Arial", 8, FontStyle.Italic);
+
+
+            // Label : StreamsOffline
+            lblStreamsOffline.AutoSize = true;
+            lblStreamsOffline.Name = "lblStreamsOffline";
+            lblStreamsOffline.Location = new System.Drawing.Point(flpStreams.Width - lblStreamsOffline.Width -15, 565);
+            lblStreamsOffline.Font = new Font("Arial", 8, FontStyle.Italic);
+
+
             // Add Controls
-            this.panelStreams.Controls.Add(this.btnGetFollowingChannels);
-            this.panelStreams.Controls.Add(this.lblNextRefresh);
+            //this.panelStreams.Controls.Add(this.btnGetFollowingChannels);
             this.panelStreams.Controls.Add(this.flpStreams);
+            this.panelStreams.Controls.Add(this.lblNextRefresh);
+            this.panelStreams.Controls.Add(this.lblStreamsOffline);
+
 
         }
 
@@ -164,6 +180,14 @@ namespace WhyNsStreamWatcher
 
         }
 
+        public delegate void UpdateOfflineStreamsLabelCallback(String text);
+        private void UpdateOfflineStreamsLabel(string text)
+        {
+
+            lblStreamsOffline.Text = text;
+
+        }
+
 
         public delegate void ShowNotificationCallback(NotificationForm Notification);
         private void ShowNotification(NotificationForm Notification)
@@ -183,12 +207,6 @@ namespace WhyNsStreamWatcher
             string NextRefreshText;
 
 
-            // Label : StreamsOffline
-            Label lblStreamsOffline = new Label();
-            lblStreamsOffline.AutoSize = true;
-            lblStreamsOffline.Location = new System.Drawing.Point(135, 23);
-            lblStreamsOffline.Name = "lblStreamsOffline";
-            lblStreamsOffline.Size = new System.Drawing.Size(0, 13);
 
 
             while (true)
@@ -201,19 +219,10 @@ namespace WhyNsStreamWatcher
 
                     if (!Properties.Settings.Default.StreamsAutoUpdate) { break; }
 
-                    string ran = new Random().Next().ToString();
-                    Label lblTest = new Label();
-
-                    // Label : Test
-
-                    lblTest.AutoSize = true;
-                    lblTest.Text = "Test: " + ran;
 
 
                     List<Control> listStreamControls = UpdateStreams();
                     
-
-                    //listStreamControls.Insert(0, lblTest);
 
                     this.flpStreams.Invoke(new AddControlsCallback(this.AddControls), new object[] { listStreamControls });
 
@@ -292,6 +301,7 @@ namespace WhyNsStreamWatcher
                 if (NewChannels != null)
                 { 
 
+                    string OfflineStreamsText = string.Empty;
                     int i = 0;
                     foreach(Channel NewChannel in NewChannels)
                     {
@@ -347,19 +357,20 @@ namespace WhyNsStreamWatcher
                         {
 
                             listStreamControls.Add(ChannelControl);
-                            //lblStreamsOffline.Text = "";
+                            OfflineStreamsText = "";
                         }
                         else
                         {
                             i++;
 
-                            //lblStreamsOffline.Text = "(" + i + " streams offline)";
+                            OfflineStreamsText = "(" + i + " streams offline)";
 
                         }
 
 
                     }
 
+                    this.lblStreamsOffline.Invoke(new UpdateOfflineStreamsLabelCallback(this.UpdateOfflineStreamsLabel), new object[] { OfflineStreamsText });
 
                     OldChannels = NewChangedChannels; // Or Should it be NewChannels? Testing will show!
 

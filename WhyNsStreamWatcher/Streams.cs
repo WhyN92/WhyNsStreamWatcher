@@ -285,12 +285,20 @@ namespace WhyNsStreamWatcher
                 // List for Channel Controls
                 List<Control> listStreamControls = new List<Control>();
 
+                List<Channel> NewChannels;
 
                 // Getting Twitch channels
                 List<Channel> TwitchChannels = this.twitchAPI.GetChannelsUserIsFollowing();
 
                 // Merging Channels from Stream Clients
-                List<Channel> NewChannels = new List<Channel>(TwitchChannels);
+                try
+                {
+                    NewChannels = new List<Channel>(TwitchChannels);
+                }
+                catch {
+
+                    NewChannels = null;
+                }
 
                 // New List for Channels
                 List<Channel> NewChangedChannels = new List<Channel>();
@@ -380,7 +388,7 @@ namespace WhyNsStreamWatcher
                 }
 
                 // No data from Stream Clients
-                lblErrorStatus.Text = "Something went worng when getting data from Twitch.tv!  :'(\n\nTry again later...";
+                lblErrorStatus.Text = "Something went worng when getting data from Twitch.tv!\n\nMake sure the entered username is valid!\nIf it is, Try again later...";
 
             }
             else
@@ -393,6 +401,9 @@ namespace WhyNsStreamWatcher
             NotificationForm nf = new NotificationForm(ui);
             nf.Title = "WhyNs Stream Watcher";
             nf.Message = lblErrorStatus.Text;
+
+            Thread.Sleep(1000);
+
             this.panelStreams.Invoke(new ShowNotificationCallback(this.ShowNotification), new object[] { nf });
 
             return new List<Control>(new Control[] { lblErrorStatus });

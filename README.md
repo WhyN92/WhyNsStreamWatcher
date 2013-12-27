@@ -6,7 +6,8 @@ A Live Stream Watcher
 
 **Hi**
 
-I have been looking for an application to notify me when a stream goes online, but i couldn't find any... So i decided to make my own.
+I have been looking for an application to notify me when a stream goes online, but i couldn't find any...
+So i decided to make my own.
 
 At the moment the application takes your Twitch.tv username and uses the [Twitch API](https://github.com/justintv/Twitch-API "https://github.com/justintv/Twitch-API") to get the Channels you are following and notify you when they come online.
 

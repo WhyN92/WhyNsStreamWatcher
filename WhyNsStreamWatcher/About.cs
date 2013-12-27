@@ -33,8 +33,9 @@ namespace WhyNsStreamWatcher
 
         private void CreatePage()
         {
-            
 
+            
+            
             // Panel : Page
 
             panelPage = new Panel();

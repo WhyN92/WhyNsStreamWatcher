@@ -1,4 +1,4 @@
-WhyNs Stream Watcher v0.0.1
+WhyNs Stream Watcher v0.0.1.xx
 =======================
 
 
